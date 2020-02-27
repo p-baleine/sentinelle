@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+service Sentinelle {
+  // Obtains the results of running tests specified in `Arguments`.
+  rpc GetTestResult(Arguments) returns (TestResult) {}
+}
+
+message Arguments {
+  repeated string list = 1;
+}
+
+message TestResult {
+  required bool ok = 1;
+  required string content = 2;
+}

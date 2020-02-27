@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 
@@ -17,6 +18,7 @@ sys.path.insert(0, os.path.join(SENTINELLE_PATH))
 BASE_PATH = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.join(BASE_PATH))
 
+
 # TODO: Django とかで見かける manager.py パターンを検討する
 # あっちがスタンダードならそれにのっかりたい…んだけど、Django とか既に
 # manager.py は存在するためそこは工夫が必要そう
@@ -24,6 +26,5 @@ sys.path.insert(0, os.path.join(BASE_PATH))
 import sentinelle  # noqa: E402
 
 if __name__ == '__main__':
-    runner = TextTestRunner()
-    server = sentinelle.server(runner=runner)
-    server.start()
+    logging.basicConfig()
+    sentinelle.serve(testRunnerCls=TextTestRunner)
