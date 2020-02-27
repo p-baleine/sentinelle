@@ -1,4 +1,4 @@
-#+TITLE: sentinelio
+#+TITLE: sentinellle
 
 * Table of Contents
 
@@ -7,3 +7,19 @@ A simple testing tool that prevents rhythm of test, code and refactor being
 disturbed for Python unittest.
 
 僕のコーディングのリズムの disturb を回避する Python 向けテスティングツール
+
+* メモ
+まずは
+
+#+begin_src bash
+$ python -m unittest examples/simple/tests/test_concatenate.py\
+#+end_src
+
+とテストを実行する代わりに
+
+#+begin_src bash
+$ # サーバ起動
+$ # クライアントからテスト実行を要求
+#+end_src
+
+とできるようにしたい。
