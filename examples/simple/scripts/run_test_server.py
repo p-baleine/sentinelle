@@ -18,6 +18,10 @@ sys.path.insert(0, os.path.join(SENTINELLE_PATH))
 BASE_PATH = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.join(BASE_PATH))
 
+# NOTE: 変更のあったソースは reload しないとだめ
+# + テスト対象に変更があったとき、ちゃんとリロードされる？
+# + テストコードに変更があったとき、ちゃんとリロードされる？
+
 
 # TODO: Django とかで見かける manager.py パターンを検討する
 # あっちがスタンダードならそれにのっかりたい…んだけど、Django とか既に

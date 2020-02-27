@@ -18,6 +18,13 @@ from sentinelle import sentinelle_pb2_grpc
 # TODO: github にある gRPC 公式の examples を一通り目を通す
 # TODO: scouty で試す
 
+# NOTE: 実行履歴を持ちたい
+# 実行履歴が鍵になる気がしている。
+# + 今回実行すべきテスト対象 :: 前回から今回で差分のあったファイルの影響範囲
+# + テスト落ちたときに知りたいこと :: green から red になったタイミングのファイルの変更範囲
+# などなど。「実行履歴」じゃなくて、sentinelle っぽい名前が良いなぁ。
+# 全体的に servicer からロジックを切り出して、sentinelle っぽくしたい(楽しそう)
+
 logger = logging.getLogger(__name__)
 
 

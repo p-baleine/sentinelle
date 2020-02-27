@@ -1,0 +1,22 @@
+#+TITLE: examples/simple
+
+* Description
+Most simple application for Sentinelle.
+
+Run server:
+
+#+begin_src bash
+$ cd examples/simple
+$ pipenv run python scripts/run_test_server.py
+#+end_src
+
+Run client:
+
+#+begin_src bash
+pipenv run python -m sentinelle.client
+[OK] ... (*ﾟ▽ﾟ)ﾉ..
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+#+end_src
