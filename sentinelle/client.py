@@ -1,3 +1,4 @@
+import colorama
 import logging
 import sys
 
@@ -11,17 +12,24 @@ def run():
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = sentinelle_pb2_grpc.SentinelleStub(channel)
         result = stub.GetTestResult(sentinelle_pb2.Arguments(
-            list=['tests/test_concatenate.py'],
+            list=['polls.tests']
+            #list=['tests/test_concatenate.py'],
             #list=['polls'],
         ))
-        green_or_red = '\033[92m' if result.ok else '\033[91m'
-        close = '\033[0m'
-        text = 'OK' if result.ok else 'FAIL'
-        emotion = '(*ﾟ▽ﾟ)ﾉ' if result.ok else '(´×ω×`)'
-        sys.stdout.write(f'[{green_or_red}{text}{close}] ... {emotion}')
+        result_color = colorama.Style.BRIGHT + (
+            colorama.Fore.GREEN if result.ok else colorama.Fore.RED)
+        green_face = '(*ﾟ▽ﾟ)ﾉ ﾒﾃﾞﾀｲ！！ ✨💯✨'
+        red_face = '(´×ω×`) ｻﾞﾝﾈﾝ…  💦💦'
+
+        sys.stdout.write(
+            f'[{result_color}'
+            f'{"OK" if result.ok else "FAIL"}{colorama.Style.RESET_ALL}]  '
+            f'{green_face if result.ok else red_face}'
+            f'\n\n')
         sys.stdout.write(result.content)
 
 
 if __name__ == '__main__':
+    colorama.init()
     logging.basicConfig()
     run()

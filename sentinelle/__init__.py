@@ -1,5 +1,5 @@
-from .servicer import serve
-
 __all__ = [
     'serve'
 ]
+
+from .servicer import serve

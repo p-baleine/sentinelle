@@ -1,8 +1,9 @@
 from concurrent import futures
 import importlib
 import logging
-import os
 import sys
+import unittest
+from unittest.signals import _interrupt_handler
 
 import grpc
 
@@ -64,6 +65,10 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 # TODO: そもそも gRPC python ってデフォルトでは並列処理まわりどうなっているか調べる
 # ThreadPoolExecutor かぁ
 # TODO: 並列化の方針を考える(フォーク？スレッド？asyncio？？？？)
+
+# signal only works in main threadを無視するというのはありかも？
+# どうせハンドラ登録できていないわけだし…
+# その場合は、teardownとか自分で呼ぶ必要がある…
 def serve(avec: InspectorProto):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     sentinelle_pb2_grpc.add_SentinelleServicer_to_server(
