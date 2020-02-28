@@ -2,7 +2,6 @@ import logging
 import os
 import sys
 
-from unittest import TextTestRunner
 
 # TODO: 後で消す、sentinelle 自体へのパスを追加
 SENTINELLE_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..")
@@ -31,4 +30,5 @@ import sentinelle  # noqa: E402
 
 if __name__ == '__main__':
     logging.basicConfig()
-    sentinelle.serve(testRunnerCls=TextTestRunner)
+    inspector = sentinelle.inspectors.BareUnittestInspector()
+    sentinelle.serve(avec=inspector)

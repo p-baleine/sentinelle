@@ -11,7 +11,8 @@ def run():
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = sentinelle_pb2_grpc.SentinelleStub(channel)
         result = stub.GetTestResult(sentinelle_pb2.Arguments(
-            list=['tests/test_concatenate.py']
+            list=['tests/test_concatenate.py'],
+            #list=['polls'],
         ))
         green_or_red = '\033[92m' if result.ok else '\033[91m'
         close = '\033[0m'
