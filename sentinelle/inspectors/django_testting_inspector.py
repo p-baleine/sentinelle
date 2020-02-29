@@ -14,16 +14,16 @@ from .inspection_report import TextInspectionReport
 
 class DjangoTestingInspector(object):
 
-    def __init__(self, testRunnerCls=TextTestRunner):
+    def __init__(self, testRunnerCls=TextTestRunner, **kwargs):
         self.testRunnerCls = testRunnerCls
         django.setup()
 
         # TODO: Runner にコマンドライン引数のオプションを渡してあげる
         if settings.TEST_RUNNER and \
            settings.TEST_RUNNER != 'django.test.runner.DiscoverRunner':
-            self.program = get_runner(settings)()
+            self.program = get_runner(settings)(**kwargs)
         else:
-            self.program = TameDiscoverRunner(keepdb=True)
+            self.program = TameDiscoverRunner(**kwargs)
 
     def inspect(self, argv):
         runner = _getTestRunnerClass(self.testRunnerCls)()
@@ -73,6 +73,6 @@ class TameDiscoverRunner(DiscoverRunner):
 
 def _getTestRunnerClass(testRunnerCls):
     class Wrapper(testRunnerCls):
-        def __init__(self):
-            super().__init__(stream=io.StringIO())
+        def __init__(self, **kwargs):
+            super().__init__(stream=io.StringIO(), **kwargs)
     return Wrapper
