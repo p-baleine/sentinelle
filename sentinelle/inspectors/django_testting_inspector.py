@@ -16,42 +16,31 @@ class DjangoTestingInspector(object):
 
     def __init__(self, testRunnerCls=TextTestRunner, **kwargs):
         self.testRunnerCls = testRunnerCls
+
         django.setup()
 
         # TODO: Runner にコマンドライン引数のオプションを渡してあげる
-        if settings.TEST_RUNNER and \
-           settings.TEST_RUNNER != 'django.test.runner.DiscoverRunner':
-            self.program = get_runner(settings)(**kwargs)
-        else:
+        if not settings.TEST_RUNNER or \
+           settings.TEST_RUNNER == 'django.test.runner.DiscoverRunner':
             self.program = TameDiscoverRunner(**kwargs)
+        else:
+            self.program = get_runner(settings)(**kwargs)
 
     def inspect(self, argv):
         runner = _getTestRunnerClass(self.testRunnerCls)()
 
         # HACK: self.program(django.test.runner.DiscoverRunner) の
-        # test_runner フィールドを以下で上書きすることで、runner 経由で
-        # テスト結果を受け取れるようにする
+        # test_runner フィールドを runner を返すクロージャで上書きすることで
+        # runner 経由でテスト結果を受け取れるようにする
         self.program.test_runner = lambda **kwargs: runner
 
-        try:
-            print('1')
-            failures = self.program.run_tests(argv)
-            print('2')
-        except Exception as e:
-            import traceback
-            print('hoge', e)
-            print(traceback.format_exc())
+        failures = self.program.run_tests(argv)
 
-        print('3')
-        result = TextTestResult(
-            stream=runner.stream, descriptions=True, verbosity=1)
-        print('4')
-        if failures:
-            result.failures = ['hoge' for _ in range(failures)]
+        # (少なくとも DiscoverRunner は)TestResult にアクセスさせてくれない
+        # ので、ダミーの TestResult を作る
+        result = PseudoTextTestResult(stream=runner.stream, failures=failures)
 
-        print('6')
         self.report = TextInspectionReport(result)
-        print('7')
 
         return self.report
 
@@ -69,6 +58,15 @@ class TameDiscoverRunner(DiscoverRunner):
     # Overrides DiscoverRunner
     def teardown_test_environment(self, **kwargs):
         teardown_test_environment()
+
+
+class PseudoTextTestResult(TextTestResult):
+
+    def __init__(self, failures, **kwargs):
+        super().__init__(descriptions=True, verbosity=1, **kwargs)
+        # テストの結果、 wasSuccessful() は failures のリストの流さで
+        # 判断されるので、テストに失敗しているときは適当なリストを入れておく
+        self.failures = [1 for _ in range(failures)]
 
 
 def _getTestRunnerClass(testRunnerCls):

@@ -1,17 +1,14 @@
 from concurrent import futures
-import importlib
 import logging
 import sys
-import unittest
-from unittest.signals import _interrupt_handler
 
 import grpc
 
 from sentinelle import sentinelle_pb2
 from sentinelle import sentinelle_pb2_grpc
 from sentinelle import utils
-
 from sentinelle.inspectors import InspectorProto
+from sentinelle import interceptors
 
 # TODO: logger!!!
 # TODO: github にある gRPC 公式の examples を一通り目を通す
@@ -35,33 +32,17 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
         self.initial_modules = None
 
     def GetTestResult(self, request, context):
-        print('a')
-        try:
-            self._invalidate_updated_modules()
-        except Exception as e:
-            import traceback
-            print('hoge', e)
-            print(traceback.format_exc())
-        print('b')
+        self._invalidate_updated_modules()
 
-        try:
-            argv = list(request.list)
-            report = self.inspector.inspect(argv)
+        argv = list(request.list)
+        report = self.inspector.inspect(argv)
 
-            result = sentinelle_pb2.TestResult(
-                ok=report.wasPassed(),
-                content=report.getContent())
-        except Exception as e:
-            import traceback
-            print('hoge', e)
-            print(traceback.format_exc())
-
-        return result
+        return sentinelle_pb2.TestResult(
+            ok=report.wasPassed(),
+            content=report.getContent())
 
     # FIXME: 嘘しかついてない、今は全モジュール invalidate してる
     # TODO: 本当に更新されたモジュールのみを invalid するようにする
-    # どうやって判断しよう？ファイルの内容からハッシュ値を得るとか？でも、各実行における
-    # 差分がほしいので、ローカルに Git リポジトリを保有するとか？？
     def _invalidate_updated_modules(self):
         if not self.initial_modules:
             # 初回は(テスト対象及びテストモジュールを読み込む前にこのメソッドを
@@ -71,6 +52,7 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
             return
 
         target_modules = set(sys.modules.keys()) - self.initial_modules
+
         for m in target_modules:
             if m in sys.modules:
                 logger.debug(f'Invalidate {m}')
@@ -81,22 +63,15 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 # FIXME: 限りなくシングルスレッドを期待している
 # TODO: そもそも gRPC python ってデフォルトでは並列処理まわりどうなっているか調べる
 # ThreadPoolExecutor かぁ
-# TODO: 並列化の方針を考える(フォーク？スレッド？asyncio？？？？)
-
-# signal only works in main threadを無視するというのはありかも？
-# どうせハンドラ登録できていないわけだし…
-# その場合は、teardownとか自分で呼ぶ必要がある…
-#def serve(avec: InspectorProto):
-def serve(avec):
-    try:
-        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        sentinelle_pb2_grpc.add_SentinelleServicer_to_server(
-            Servicer(avec), server)
-        server.add_insecure_port('[::]:50051')
-    except Exception as e:
-        import traceback
-        print('hoge', e)
-        print(traceback.format_exc())
-
-    print(server.start())
+def serve(avec: InspectorProto):
+    server = grpc.server(
+        futures.ThreadPoolExecutor(max_workers=10),
+        interceptors=[interceptors.GlobalExceptionInterceptor()])
+    sentinelle_pb2_grpc.add_SentinelleServicer_to_server(
+        Servicer(avec), server)
+    server.add_insecure_port('[::]:50051')
+    server.start()
+    # TODO: wait_for_termination は experimental で古いバージョンだと存在しないため
+    # バージョン毎に切り分けする
+    # https://github.com/grpc/grpc/blob/8aff9ec59220d3394d36c1e43c1a5fbb3c2e9574/src/python/grpcio/grpc/__init__.py#L1456
     server.wait_for_termination()
