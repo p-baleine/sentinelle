@@ -11,7 +11,7 @@ from sentinelle import sentinelle_pb2
 from sentinelle import sentinelle_pb2_grpc
 from sentinelle import utils
 
-# from sentinelle.inspectors import InspectorProto
+from sentinelle.inspectors import InspectorProto
 
 # TODO: logger!!!
 # TODO: github にある gRPC 公式の examples を一通り目を通す
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 
-    def __init__(self, inspector):
+    def __init__(self, inspector: InspectorProto):
         self.inspector = inspector
         # テスト実行でロードされたモジュールを覚えておきたい(エグい)
         self.initial_modules = None

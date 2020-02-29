@@ -5,9 +5,11 @@ import unittest
 from django.core.management.base import BaseCommand
 
 
-SENTINELLE_PATH = '/sentinelle/sentinelle'
+#SENTINELLE_PATH = '/sentinelle/sentinelle'
+SENTINELLE_PATH = '/sentinelle'
 sys.path.insert(0, os.path.join(SENTINELLE_PATH))
 
+print('server', sys.path)
 
 import sentinelle  # noqa: E402
 

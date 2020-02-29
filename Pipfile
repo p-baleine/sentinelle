@@ -9,6 +9,7 @@ verify_ssl = true
 grpcio-tools = "*"
 django = "*"
 colorama = "*"
+typing-extensions = "*"
 
 [requires]
 python_version = "3.8"
