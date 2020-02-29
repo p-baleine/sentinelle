@@ -3,5 +3,5 @@ __all__ = [
     'inspectors'
 ]
 
-#import inspectors
 from .servicer import serve
+from . import inspectors
