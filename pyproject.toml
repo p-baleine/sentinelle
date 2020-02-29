@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sentinelle"
+version = "0.1.0"
+description = "A simple testing tool that prevents your rhythm of test, coding and refactoring from being disturbed."
+authors = ["p-baleine <p.baleine@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+colorama = "^0.4.3"
+django = "^3.0.3"
+grpcio = "^1.17.2"
+grpcio-tools = "^1.17.2"
+typing-extensions = "^3.7.4.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

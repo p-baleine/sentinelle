@@ -1,6 +1,10 @@
-from typing import Protocol
 from unittest.result import TestResult
 from unittest.runner import TextTestResult
+
+try:
+    from typing import Protocol
+except Exception:
+    from typing_extensions import Protocol
 
 
 class InspectionReport(Protocol):

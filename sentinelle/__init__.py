@@ -1,5 +1,14 @@
 __all__ = [
-    'serve'
+    'SentinelleError',
+    'inspectors',
+    'serve',
 ]
 
-from .servicer import serve
+import grpc
+
+from sentinelle import inspectors
+from sentinelle.servicer import serve
+
+
+class SentinelleError(grpc.RpcError):
+    pass
