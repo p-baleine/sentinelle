@@ -9,7 +9,9 @@ import grpc
 
 from sentinelle import sentinelle_pb2
 from sentinelle import sentinelle_pb2_grpc
-from sentinelle.inspectors import InspectorProto
+from sentinelle import utils
+
+# from sentinelle.inspectors import InspectorProto
 
 # TODO: logger!!!
 # TODO: github にある gRPC 公式の examples を一通り目を通す
@@ -33,14 +35,28 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
         self.initial_modules = None
 
     def GetTestResult(self, request, context):
-        self._invalidate_updated_modules()
+        print('a')
+        try:
+            self._invalidate_updated_modules()
+        except Exception as e:
+            import traceback
+            print('hoge', e)
+            print(traceback.format_exc())
+        print('b')
 
-        argv = list(request.list)
-        report = self.inspector.inspect(argv)
+        try:
+            argv = list(request.list)
+            report = self.inspector.inspect(argv)
 
-        return sentinelle_pb2.TestResult(
-            ok=report.wasPassed(),
-            content=report.getContent())
+            result = sentinelle_pb2.TestResult(
+                ok=report.wasPassed(),
+                content=report.getContent())
+        except Exception as e:
+            import traceback
+            print('hoge', e)
+            print(traceback.format_exc())
+
+        return result
 
     # FIXME: 嘘しかついてない、今は全モジュール invalidate してる
     # TODO: 本当に更新されたモジュールのみを invalid するようにする
@@ -58,7 +74,8 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
         for m in target_modules:
             if m in sys.modules:
                 logger.debug(f'Invalidate {m}')
-                importlib.reload(sys.modules[m])
+                utils.deep_reload(sys.modules[m])
+                # importlib.reload(sys.modules[m])
 
 
 # FIXME: 限りなくシングルスレッドを期待している
@@ -69,10 +86,17 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 # signal only works in main threadを無視するというのはありかも？
 # どうせハンドラ登録できていないわけだし…
 # その場合は、teardownとか自分で呼ぶ必要がある…
-def serve(avec: InspectorProto):
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    sentinelle_pb2_grpc.add_SentinelleServicer_to_server(
-        Servicer(avec), server)
-    server.add_insecure_port('[::]:50051')
-    server.start()
+#def serve(avec: InspectorProto):
+def serve(avec):
+    try:
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        sentinelle_pb2_grpc.add_SentinelleServicer_to_server(
+            Servicer(avec), server)
+        server.add_insecure_port('[::]:50051')
+    except Exception as e:
+        import traceback
+        print('hoge', e)
+        print(traceback.format_exc())
+
+    print(server.start())
     server.wait_for_termination()

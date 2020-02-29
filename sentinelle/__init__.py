@@ -1,5 +1,7 @@
 __all__ = [
-    'serve'
+    'serve',
+    'inspectors'
 ]
 
+#import inspectors
 from .servicer import serve

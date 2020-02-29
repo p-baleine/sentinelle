@@ -23,7 +23,7 @@ class DjangoTestingInspector(object):
            settings.TEST_RUNNER != 'django.test.runner.DiscoverRunner':
             self.program = get_runner(settings)()
         else:
-            self.program = TameDiscoverRunner()
+            self.program = TameDiscoverRunner(keepdb=True)
 
     def inspect(self, argv):
         runner = _getTestRunnerClass(self.testRunnerCls)()
@@ -73,6 +73,6 @@ class TameDiscoverRunner(DiscoverRunner):
 
 def _getTestRunnerClass(testRunnerCls):
     class Wrapper(testRunnerCls):
-        def __init__(self, **kwargs):
-            super().__init__(stream=io.StringIO(), **kwargs)
+        def __init__(self):
+            super().__init__(stream=io.StringIO())
     return Wrapper

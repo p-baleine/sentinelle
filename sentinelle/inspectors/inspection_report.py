@@ -1,15 +1,15 @@
-from typing import Protocol
+# from typing import Protocol
 from unittest.result import TestResult
 from unittest.runner import TextTestResult
 
 
-class InspectionReport(Protocol):
+# class InspectionReport(Protocol):
 
-    def wasPassed(self, test_result: TestResult) -> bool:
-        pass
+#     def wasPassed(self, test_result: TestResult) -> bool:
+#         pass
 
-    def getContent(self) -> str:
-        pass
+#     def getContent(self) -> str:
+#         pass
 
 
 class TextInspectionReport(object):
