@@ -50,9 +50,10 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 
         target_modules = set(sys.modules.keys()) - self.initial_modules
 
+        logger.info('Reloading modules: {}'.format(', '.join(target_modules)))
+
         for m in target_modules:
             if m in sys.modules:
-                logger.debug(f'Invalidate {m}')
                 utils.deep_reload(sys.modules[m])
 
 
@@ -60,11 +61,16 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 def serve(avec: InspectorProto):
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=10),
-        interceptors=[interceptors.GlobalExceptionInterceptor()])
+        interceptors=[
+            interceptors.GlobalExceptionInterceptor(),
+            interceptors.LoggingInterceptor(),
+        ])
     sentinelle_pb2_grpc.add_SentinelleServicer_to_server(
         Servicer(avec), server)
     server.add_insecure_port('[::]:50051')
     server.start()
+
+    logger.info('Servicer starts and waiting for requests...')
 
     try:
         server.wait_for_termination()
@@ -72,6 +78,9 @@ def serve(avec: InspectorProto):
         if str(e) == ('\'_Server\' object has no attribute'
                       ' \'wait_for_termination\''):
             # https://github.com/grpc/grpc/blob/5b9b5ebe26b3c84477d989fbcda5959e9ec00adf/examples/python/data_transmission/server.py#L105
+            logger.info('You are using gRPC version that does not support'
+                        ' Server#wait_for_termination. Servicer will fall'
+                        ' back into ad-hoc wait-loop.')
             try:
                 while 1:
                     time.sleep(10)
