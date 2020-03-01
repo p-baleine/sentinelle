@@ -1,8 +1,9 @@
 syntax = "proto2";
 
 service Sentinelle {
-  // Obtains the results of running tests specified in `Arguments`.
-  rpc GetTestResult(Arguments) returns (TestResult) {}
+  // Execute tests specified in `Arguments` and return
+  // the results of tests.
+  rpc DoTest(Arguments) returns (TestResult) {}
 }
 
 message Arguments {

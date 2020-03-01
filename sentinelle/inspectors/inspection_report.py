@@ -7,7 +7,7 @@ except Exception:
     from typing_extensions import Protocol
 
 
-class InspectionReport(Protocol):
+class InspectionReportProto(Protocol):
 
     def wasPassed(self, test_result: TestResult) -> bool:
         pass

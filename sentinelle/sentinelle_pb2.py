@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=b'\n\x1bsentinelle/sentinelle.proto\"\x19\n\tArguments\x12\x0c\n\x04list\x18\x01 \x03(\t\")\n\nTestResult\x12\n\n\x02ok\x18\x01 \x02(\x08\x12\x0f\n\x07\x63ontent\x18\x02 \x02(\t28\n\nSentinelle\x12*\n\rGetTestResult\x12\n.Arguments\x1a\x0b.TestResult\"\x00'
+  serialized_pb=b'\n\x1bsentinelle/sentinelle.proto\"\x19\n\tArguments\x12\x0c\n\x04list\x18\x01 \x03(\t\")\n\nTestResult\x12\n\n\x02ok\x18\x01 \x02(\x08\x12\x0f\n\x07\x63ontent\x18\x02 \x02(\t21\n\nSentinelle\x12#\n\x06\x44oTest\x12\n.Arguments\x1a\x0b.TestResult\"\x00'
 )
 
 
@@ -119,11 +119,11 @@ _SENTINELLE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   serialized_start=101,
-  serialized_end=157,
+  serialized_end=150,
   methods=[
   _descriptor.MethodDescriptor(
-    name='GetTestResult',
-    full_name='Sentinelle.GetTestResult',
+    name='DoTest',
+    full_name='Sentinelle.DoTest',
     index=0,
     containing_service=None,
     input_type=_ARGUMENTS,

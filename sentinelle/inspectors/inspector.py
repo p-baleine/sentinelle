@@ -5,9 +5,9 @@ try:
 except Exception:
     from typing_extensions import Protocol
 
-from .inspection_report import InspectionReport
+from sentinelle.inspectors import InspectionReportProto
 
 
 class InspectorProto(Protocol):
-    def inpect(self, argv: List[str]) -> InspectionReport:
+    def inpect(self, argv: List[str]) -> InspectionReportProto:
         pass

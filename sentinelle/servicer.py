@@ -10,8 +10,7 @@ from sentinelle import sentinelle_pb2_grpc
 from sentinelle import utils
 from sentinelle.inspectors import InspectorProto
 from sentinelle import interceptors
-
-# TODO: logger!!!
+from sentinelle.secretaires import SecretaireProto
 
 # NOTE: 実行履歴を持ちたい
 # 実行履歴が鍵になる気がしている。
@@ -23,20 +22,27 @@ logger = logging.getLogger(__name__)
 
 class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 
-    def __init__(self, inspector: InspectorProto):
+    def __init__(
+        self,
+        inspector: InspectorProto,
+        secretaier: SecretaireProto,
+    ):
         self.inspector = inspector
+        self.secretaire = secretaier
         # テスト実行でロードされたモジュールを覚えておきたい(エグい)
         self.initial_modules = None
 
-    def GetTestResult(self, request, context):
+    def DoTest(self, request, context):
         self._invalidate_updated_modules()
 
         argv = list(request.list)
         report = self.inspector.inspect(argv)
+        self.secretaire.record(report)
 
         return sentinelle_pb2.TestResult(
             ok=report.wasPassed(),
-            content=report.getContent())
+            content=report.getContent(),
+            diff=self.secretaire.history.latest.diff)
 
     # FIXME: 嘘しかついてない、今は全モジュール invalidate してる
     # TODO: 本当に更新されたモジュールのみを invalid するようにする
@@ -58,16 +64,21 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 
 
 # FIXME: 限りなくシングルスレッドを期待している
-def serve(avec: InspectorProto):
+# https://github.com/grpc/grpc/tree/master/examples/python/multiprocessing
+def serve(
+    inspector: InspectorProto,
+    secretaire: SecretaireProto,
+    port='[::]:50051'
+):
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=10),
         interceptors=[
             interceptors.GlobalExceptionInterceptor(),
             interceptors.LoggingInterceptor(),
         ])
-    sentinelle_pb2_grpc.add_SentinelleServicer_to_server(
-        Servicer(avec), server)
-    server.add_insecure_port('[::]:50051')
+    servicer = Servicer(inspector=inspector, secretaier=secretaire)
+    sentinelle_pb2_grpc.add_SentinelleServicer_to_server(servicer, server)
+    server.add_insecure_port(port)
     server.start()
 
     logger.info('Servicer starts and waiting for requests...')

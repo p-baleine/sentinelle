@@ -31,4 +31,8 @@ import sentinelle  # noqa: E402
 if __name__ == '__main__':
     logging.basicConfig()
     inspector = sentinelle.inspectors.BareUnittestInspector()
-    sentinelle.serve(avec=inspector)
+    secretaire = sentinelle.secretaires.GitPoweredSecretaire()
+    sentinelle.serve(
+        inspector=inspector,
+        secretaire=secretaire,
+        port='[::]:50052')
