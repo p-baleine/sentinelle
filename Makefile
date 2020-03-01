@@ -12,13 +12,13 @@ $(PROTO_DEF_FILES:protos/sentinelle/%.proto=sentinelle/%_pb2_grpc.py)
 all: $(PB2_FILES) $(PB2_GRPC_FILES)
 
 sentinelle/%_pb2.py: protos/sentinelle/%.proto
-	pipenv run python -m grpc_tools.protoc -I protos \
+	poetry run python -m grpc_tools.protoc -I protos \
 		--python_out . \
 		--grpc_python_out . \
 		$<
 
 sentinelle/%_pb2_grpc.py: protos/sentinelle/%.proto
-	pipenv run python -m grpc_tools.protoc -I protos \
+	poetry run python -m grpc_tools.protoc -I protos \
 		--python_out . \
 		--grpc_python_out . \
 		$<
