@@ -12,7 +12,7 @@ from sentinelle import sentinelle_pb2_grpc
 def run():
     os.system('tput reset')
 
-    with grpc.insecure_channel('localhost:50052') as channel:
+    with grpc.insecure_channel('localhost:50051') as channel:
         stub = sentinelle_pb2_grpc.SentinelleStub(channel)
         result = stub.DoTest(sentinelle_pb2.Arguments(
             #list=['application.sc_tests.views.service.api.candidates.test_is_seen_by_lapras']

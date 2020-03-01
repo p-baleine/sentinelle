@@ -41,8 +41,9 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 
         return sentinelle_pb2.TestResult(
             ok=report.wasPassed(),
-            content=report.getContent(),
-            diff=self.secretaire.history.latest.diff)
+            content=report.getContent()# ,
+            # TODO: diff=self.secretaire.history.latest.diff
+        )
 
     # FIXME: 嘘しかついてない、今は全モジュール invalidate してる
     # TODO: 本当に更新されたモジュールのみを invalid するようにする

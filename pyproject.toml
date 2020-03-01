@@ -12,6 +12,7 @@ grpcio = "^1.17.2"
 grpcio-tools = "^1.17.2"
 typing-extensions = "^3.7.4.1"
 flake8 = "^3.7.9"
+GitPython = "^3.1.0"
 
 [tool.poetry.dev-dependencies]
 
