@@ -74,11 +74,6 @@ class GitPoweredSecretaire(contextlib.ContextDecorator):
                     *[(d.a_path, d.b_path)
                       for d in wrepo.index.diff('HEAD@{1}')])))
 
-            # print('\n'.join(wrepo.git.diff('HEAD@{1}').split('\n')[:100]))
-
-            print(self.latest_commit)
-            print('HEAD^')
-
             return Difference(
                 commit=wrepo.git.rev_parse('HEAD'),
                 previous=wrepo.git.rev_parse('HEAD@{1}'),
