@@ -37,13 +37,19 @@ class Servicer(sentinelle_pb2_grpc.SentinelleServicer):
 
         argv = list(request.list)
         report = self.inspector.inspect(argv)
+
         self.secretaire.record(report)
+
+        diff = self.secretaire.history.latest.diff
 
         return sentinelle_pb2.TestResult(
             ok=report.wasPassed(),
-            content=report.getContent()# ,
-            # TODO: diff=self.secretaire.history.latest.diff
-        )
+            content=report.getContent(),
+            diff=sentinelle_pb2.TestResult.Difference(
+                commit=diff.commit,
+                previous=diff.previous,
+                changed_files=diff.changed_files,
+                raw=diff.raw))
 
     # FIXME: 嘘しかついてない、今は全モジュール invalidate してる
     # TODO: 本当に更新されたモジュールのみを invalid するようにする

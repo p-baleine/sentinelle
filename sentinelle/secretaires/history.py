@@ -1,15 +1,15 @@
 from collections import namedtuple
 from typing import NoReturn
 
-try:
-    from typing import Protocol
-except Exception:
-    from typing_extensions import Protocol
-
-
-class Difference(Protocol):
-    pass
-
+Difference = namedtuple('Difference', [
+    'commit',
+    'previous',
+    'changed_files',
+    'deleted_files',
+    'new_files',
+    'raw',
+    # TODO: renamed, ...
+])
 
 HistoryEvent = namedtuple('HistoryEvent', [
     'passed',

@@ -13,4 +13,12 @@ message Arguments {
 message TestResult {
   required bool ok = 1;
   required string content = 2;
+  required Difference diff = 3;
+
+  message Difference {
+    required string commit = 1;
+    required string previous = 2;
+    repeated string changed_files = 3;
+    required string raw = 4;
+  }
 }
