@@ -12,7 +12,7 @@
       "conditions": [
         {
           "type": "creatorMatches",
-          "pattern": "p-baleine"
+          "pattern": ""
         }
       ]
     }
